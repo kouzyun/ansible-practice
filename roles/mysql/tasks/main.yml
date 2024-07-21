@@ -1,0 +1,40 @@
+- name: install mysql repository
+  yum:
+    state: present
+    name: http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm
+    validate_certs: no
+
+- name: uninstall mariadb
+  yum:
+    name: mariadb-libs
+    state: removed
+
+- name: install rpm
+  yum: name={{ item }} state=present
+  loop:
+    - "{{ MYSQL_VERSION }}"
+
+- name: install key
+  rpm_key:
+    key: https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
+    validate_certs: no
+
+- name: install mysqld
+  yum: name={{ item }} state=installed 
+  loop:
+    - mysql-community-server
+
+- name: start mysqld
+  systemd: name=mysqld state=started enabled=yes
+
+- name: copy mysqld config
+  copy:
+    src: "roles/mysql/files/{{ item.src }}"
+    dest: "/etc/{{ item.dest }}"
+    owner: menta
+    group: menta
+    backup: no
+    mode: 644
+  loop:
+    - { src: my.cnf, dest: . }
+  notify: restart mysqld

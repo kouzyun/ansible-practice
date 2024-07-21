@@ -1,0 +1,14 @@
+- name: add sudoers
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: "{{ item.match }}"
+    line: "{{ item.line }}" 
+  loop:
+  - { match: 'menta', line: 'menta ALL=(ALL) NOPASSWD: ALL' }
+
+- name: authorized_key for user menta
+  ignore_errors: true
+  authorized_key:
+    user: menta
+    key: "{{ lookup('file', '~/.ssh/menta_ansible.pub') }}"

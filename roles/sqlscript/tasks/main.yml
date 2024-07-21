@@ -1,0 +1,17 @@
+- name: make mysql_backup.sh file
+  file:
+        path: "/home/menta/{{ item.name }}"
+        state: touch
+  loop:
+  - { name: 'mysql_backup.sh' }
+
+- name: copy mysql_backup.sh
+  copy:
+    src: "{{ item.src }}"
+    dest: "/home/menta/{{ item.dest }}"
+    backup: no
+    owner: menta
+    group: menta
+    mode: 0755
+  with_items:
+    - { src: roles/sqlscript/files/mysql_backup.sh, dest: mysql_backup.sh }

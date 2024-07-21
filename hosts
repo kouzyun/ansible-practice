@@ -1,0 +1,6 @@
+[web]
+dev-menta
+
+#group
+[prd:children]
+web
